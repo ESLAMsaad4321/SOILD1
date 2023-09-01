@@ -1,0 +1,46 @@
+﻿@model FormViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<form>
+    <label asp-for="ShapeId"></label>
+    <select class="form-select" asp-for="ShapeId" asp-items="@(new SelectList(Model.Shapes,"Id","Name"))">
+        <option></option>
+    </select>
+    <label asp-for="TypeId"></label>
+    <select class="form-select" asp-for="TypeId" asp-items="@(new SelectList(Model.Types,"Id","Name"))">
+        <option></option>
+    </select>
+</form>
+@section Scripts{
+    <script>
+        $(document).ready(function(){
+            $('#ShapeId').on('change',function(){
+               var ShapeId= $(this).val();
+                var TypeId = $('#TypeId');
+                TypeId.empty();
+                TypeId.append('<option></option>');
+              if(ShapeId!='')
+              {
+                    $.ajax({
+                        url: '/Home/GetType?ShapeId=' + ShapeId,
+                        success: function (type) {
+                            $.each(type,function(i,type){
+                                TypeId.append($('<option></option>').attr('value',type.id).text(type.name));
+                            });
+
+                            
+                        },
+                        error: function (type) {
+                            alert("Something went wrong!");
+                        }
+                    });
+              }
+            });
+        });
+    </script>
+}
+<div class="form-group">
+    <input type="submit" value="Next" class="btn btn-primary" />
+</div>
