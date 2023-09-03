@@ -7,7 +7,7 @@ namespace SOILD1.Controllers
 {
     public class HomeController : Controller
     {
-        private List <Shape> _shapes;
+        private List<Shape> _shapes;
         private List<Type> _Types;
         public HomeController()
         {
@@ -32,24 +32,39 @@ namespace SOILD1.Controllers
                 new Type() {Id=12,Name= "Sphere",ShapeId=2},
             };
         }
+        [HttpGet]
         public IActionResult Index()
         {
             var viewmodel = new FormViewModel()
             {
-                Shapes=_shapes.ToList(),
+                Shapes = _shapes.ToList(),
             };
             return View(viewmodel);
         }
-        public IActionResult GetType(int ShapeId)
+
+        [HttpPost]
+        public IActionResult Index(string ShapeId, int TypeId)
         {
-            var type = _Types.Where(a =>a.ShapeId == ShapeId).ToList();
+            var controllerName = "";
+            var actionName = "";
+            var Dimenison = _shapes.FirstOrDefault(m => m.Name == ShapeId);
+            if (Dimenison != null && Dimenison.Name == "2d shape")
+            {
+                controllerName = "_2DShape";
+            }
+            else
+            {
+                controllerName = "_3DShape";
+            }
+            actionName = _Types.FirstOrDefault(m => m.Id == TypeId)?.Name.Replace(" ", "");
+            return RedirectToAction(actionName, controllerName);
+        }
+        public IActionResult GetType(string ShapeId)
+        {
+            var Dimenison = _shapes.FirstOrDefault(m => m.Name == ShapeId);
+            var type = _Types.Where(a => a.ShapeId == Dimenison?.Id).ToList();
             return Ok(type);
         }
-     /*  public IActionResult ToShape(Type type)
-        {
-
-        }
-     */
         public IActionResult Privacy()
         {
             return View();
